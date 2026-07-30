@@ -1,5 +1,6 @@
 apiVersion: skaffold/v4beta11
 kind: Config
+
 metadata:
   name: production-app
 
@@ -10,3 +11,6 @@ manifests:
 
 deploy:
   kubectl: {}
+
+profiles:
+  - name: production

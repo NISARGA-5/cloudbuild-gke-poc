@@ -1,6 +1,5 @@
 steps:
-
-# Build Docker Image
+# Build Docker image
 - name: 'gcr.io/cloud-builders/docker'
   id: Build
   args:
@@ -9,16 +8,16 @@ steps:
     - asia-south1-docker.pkg.dev/$PROJECT_ID/demo-repo/production-app:$SHORT_SHA
     - ./app
 
-# Push Docker Image
+# Push image
 - name: 'gcr.io/cloud-builders/docker'
   id: Push
   args:
     - push
     - asia-south1-docker.pkg.dev/$PROJECT_ID/demo-repo/production-app:$SHORT_SHA
 
-# Create Cloud Deploy Release
+# Create Cloud Deploy release
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-  id: Cloud Deploy Release
+  id: Create Release
   entrypoint: gcloud
   args:
     - deploy
@@ -27,6 +26,8 @@ steps:
     - release-$SHORT_SHA
     - --delivery-pipeline=production-pipeline
     - --region=asia-south1
+    - --skaffold-file=skaffold.yaml
+    - --source=.
     - --images=production-app=asia-south1-docker.pkg.dev/$PROJECT_ID/demo-repo/production-app:$SHORT_SHA
 
 images:
