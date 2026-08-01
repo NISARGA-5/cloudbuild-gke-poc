@@ -1,0 +1,33 @@
+apiVersion: deploy.cloud.google.com/v1
+kind: DeliveryPipeline
+
+metadata:
+  name: production-pipeline
+
+serialPipeline:
+  stages:
+    - targetId: production-target
+      profiles:
+        - production
+
+---
+apiVersion: deploy.cloud.google.com/v1
+kind: Target
+
+metadata:
+  name: production-target
+
+gke:
+  cluster: projects/nisarga-503907/locations/asia-south1/clusters/production-cluster3
+  dnsEndpoint: true
+
+executionConfigs:
+- usages:
+  - RENDER
+  - DEPLOY
+  - VERIFY
+  - PREDEPLOY
+  - POSTDEPLOY
+  - ANALYSIS
+
+  serviceAccount: 468920720274-compute@developer.gserviceaccount.com

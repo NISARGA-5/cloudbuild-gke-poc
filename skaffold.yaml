@@ -13,4 +13,4 @@ deploy:
   kubectl: {}
 
 profiles:
-  - name: production-target1
+  - name: production
