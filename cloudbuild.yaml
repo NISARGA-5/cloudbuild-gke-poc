@@ -24,7 +24,7 @@ steps:
     - releases
     - create
     - release-$SHORT_SHA
-    - --delivery-pipeline=production-pipeline
+    - --delivery-pipeline=production-target
     - --region=asia-south1
     - --source=/workspace
     - --skaffold-file=skaffold.yaml
