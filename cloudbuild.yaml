@@ -1,37 +1,46 @@
+substitutions:
+  _REGION: asia-south1
+  _REPO: demo-repo
+  _IMAGE_NAME: production-app
+
 steps:
-# Build Docker image
+
+# Step 1 - Build Docker Image
 - name: 'gcr.io/cloud-builders/docker'
   id: Build
-  args:
-    - build
-    - -t
-    - asia-south1-docker.pkg.dev/$PROJECT_ID/demo-repo/production-app:$SHORT_SHA
-    - ./app
 
-# Push Docker image
+  secretEnv:
+    - GITHUB_ACCESS_TOKEN
+
+  entrypoint: bash
+
+  args:
+    - -c
+    - |
+      echo "Building image..."
+
+      docker build \
+        -t "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_IMAGE_NAME}:${SHORT_SHA}" \
+        --build-arg GITHUB_ACCESS_TOKEN=$$GITHUB_ACCESS_TOKEN \
+        ./app
+
+# Step 2 - Push Docker Image
 - name: 'gcr.io/cloud-builders/docker'
   id: Push
+  waitFor:
+    - Build
+
   args:
     - push
-    - asia-south1-docker.pkg.dev/$PROJECT_ID/demo-repo/production-app:$SHORT_SHA
-
-# Create Cloud Deploy Release
-- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-  id: Create Release
-  entrypoint: gcloud
-  args:
-    - deploy
-    - releases
-    - create
-    - release-$SHORT_SHA
-    - --delivery-pipeline=production-pipeline
-    - --region=asia-south1
-    - --source=/workspace
-    - --skaffold-file=skaffold.yaml
-    - --images=production-app=asia-south1-docker.pkg.dev/$PROJECT_ID/demo-repo/production-app:$SHORT_SHA
+    - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_IMAGE_NAME}:${SHORT_SHA}"
 
 images:
-- asia-south1-docker.pkg.dev/$PROJECT_ID/demo-repo/production-app:$SHORT_SHA
+- "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_IMAGE_NAME}:${SHORT_SHA}"
 
 options:
   logging: CLOUD_LOGGING_ONLY
+
+availableSecrets:
+  secretManager:
+  - versionName: projects/$PROJECT_ID/secrets/github-access-token/versions/latest
+    env: GITHUB_ACCESS_TOKEN
