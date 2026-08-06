@@ -4,8 +4,7 @@ substitutions:
   _IMAGE_NAME: production-app
 
 steps:
-
-# Step 1 - Build Docker Image
+# Build Docker Image
 - name: 'gcr.io/cloud-builders/docker'
   id: Build
 
@@ -17,14 +16,14 @@ steps:
   args:
     - -c
     - |
-      echo "Building image..."
+      echo "Building Docker image..."
 
       docker build \
         -t "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_IMAGE_NAME}:${SHORT_SHA}" \
         --build-arg GITHUB_ACCESS_TOKEN=$$GITHUB_ACCESS_TOKEN \
         ./app
 
-# Step 2 - Push Docker Image
+# Push Docker Image
 - name: 'gcr.io/cloud-builders/docker'
   id: Push
   waitFor:
