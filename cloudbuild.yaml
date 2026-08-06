@@ -1,7 +1,7 @@
 substitutions:
   _REGION: asia-south1
   _REPO: demo-repo
-  _IMAGE_NAME: production-app
+  _IMAGE_NAME: production-app1
 
 steps:
 # Build Docker Image
