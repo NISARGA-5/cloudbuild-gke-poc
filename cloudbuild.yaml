@@ -13,7 +13,6 @@ steps:
         -t "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_IMAGE_NAME}:${SHORT_SHA}" \
         --build-arg GITHUB_ACCESS_TOKEN=$$GITHUB_ACCESS_TOKEN \
         ./app
-
 # Push Docker Image
 - name: 'gcr.io/cloud-builders/docker'
   id: Push
@@ -22,14 +21,11 @@ steps:
   args:
     - push
     - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_IMAGE_NAME}:${SHORT_SHA}"
-
 images:
 - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_IMAGE_NAME}:${SHORT_SHA}"
-
 options:
   logging: CLOUD_LOGGING_ONLY
-
 availableSecrets:
   secretManager:
-  - versionName: projects/$PROJECT_ID/secrets/github-access-token/versions/latest
+  - versionName: projects/$PROJECT_ID/secrets/${_PAT_SECRET_NAME}/versions/latest
     env: GITHUB_ACCESS_TOKEN
